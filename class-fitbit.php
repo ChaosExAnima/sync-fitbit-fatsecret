@@ -2,9 +2,6 @@
 
 class Fitbit {
 	const CLIENTID = '22BF8N';
-	const CLIENTSECRET = '7a6047b31ddec318eddd224b93c5c60a';
-	const CODE = '601a5202e84fa3a44c0075cf102e40c4af31debe';
-	const CALLBACK = 'https://echonyc.name';
 	const API_ROOT = 'https://api.fitbit.com';
 
 	private ?Secrets $secrets = null;
@@ -38,8 +35,15 @@ class Fitbit {
 	}
 
 	private function set_token() : void {
-		$basicauthtoken = base64_encode( self::CLIENTID . ':' . self::CLIENTSECRET );
+		$basicauthtoken = base64_encode( self::CLIENTID . ':' . $this->secrets->fitbit_secret );
 		$refresh_token  = $this->secrets->fitbit_refresh;
+
+		if ( ! $this->secrets->fitbit_code ) {
+			echo 'New grant needed. Visit https://www.fitbit.com/oauth2/authorize?' .
+				'client_id=' . self::CLIENTID . '&redirect_uri=' . $this->secrets->fitbit_redirect .
+				'&response_type=code&scope=weight+nutrition+profile' . "\n";
+			exit( 1 );
+		}
 
 		$params = [
 			'client_id' => self::CLIENTID,
@@ -49,8 +53,8 @@ class Fitbit {
 			$params['refresh_token'] = $refresh_token;
 		} else {
 			$params['grant_type']   = 'authorization_code';
-			$params['redirect_uri'] = self::CALLBACK;
-			$params['code']         = self::CODE;
+			$params['redirect_uri'] = $this->secrets->fitbit_redirect;
+			$params['code']         = $this->secrets->fitbit_code;
 		}
 
 		$headers = [
@@ -62,9 +66,9 @@ class Fitbit {
 		if ( isset( $response->success ) && ! $response->success ) {
 			if ( 'invalid_grant' === $response->errors[0]->errorType ) {
 				echo 'New grant needed. Visit https://www.fitbit.com/oauth2/authorize?' .
-					'client_id=' . self::CLIENTID . '&redirect_uri=' . self::CALLBACK .
-					'&response_type=code&scope=weight+nutrition+profile';
-				return;
+					'client_id=' . self::CLIENTID . '&redirect_uri=' . $this->secrets->fitbit_redirect .
+					'&response_type=code&scope=weight+nutrition+profile' . "\n";
+				exit( 1 );
 			}
 			throw new Error( $response->errors[0]->message );
 		}
