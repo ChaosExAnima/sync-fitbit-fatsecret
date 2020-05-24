@@ -1,9 +1,11 @@
 <?php
 
-require_once 'class-request-base.php';
+require_once 'trait-request.php';
 
-class Fitbit extends RequestBase {
-	protected const API_ROOT = 'https://api.fitbit.com';
+class Fitbit {
+	use Request;
+
+	private const API_ROOT = 'https://api.fitbit.com';
 
 	private const CLIENTID = '22BF8N';
 
@@ -79,7 +81,7 @@ class Fitbit extends RequestBase {
 		$this->secrets->fitbit_refresh = $response->refresh_token;
 	}
 
-	protected function request( string $path, string $method = 'GET', ?array $args = null ) : object {
+	private function request( string $path, string $method = 'GET', ?array $args = null ) : object {
 		$headers = [
 			'Accept-Language' => 'en_US',
 		];
@@ -87,6 +89,6 @@ class Fitbit extends RequestBase {
 			$headers['Authorization'] = "Bearer {$this->token}";
 		}
 		$args['headers'] = array_merge( $headers, $args['headers'] ?? [] );
-		return parent::request( self::API_ROOT . $path, $method, $args );
+		return $this->base_request( self::API_ROOT . $path, $method, $args );
 	}
 }

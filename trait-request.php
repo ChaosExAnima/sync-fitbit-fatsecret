@@ -1,9 +1,9 @@
 <?php
 
-abstract class RequestBase {
-	protected array $response_cache = [];
+trait Request {
+	private array $response_cache = [];
 
-	protected function request( string $path, string $method = 'GET', ?array $args = null ) : object {
+	private function base_request( string $path, string $method = 'GET', ?array $args = null ) : object {
 		if ( ! empty( $args['params'] ) ) {
 			$path .= '?' . http_build_query( $args['params'] );
 		}
