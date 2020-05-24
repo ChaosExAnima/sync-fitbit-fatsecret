@@ -1,14 +1,15 @@
 <?php
 
-class Fitbit {
-	const CLIENTID = '22BF8N';
-	const API_ROOT = 'https://api.fitbit.com';
+require_once 'class-request-base.php';
+
+class Fitbit extends RequestBase {
+	protected const API_ROOT = 'https://api.fitbit.com';
+
+	private const CLIENTID = '22BF8N';
 
 	private ?Secrets $secrets = null;
 
 	private ?string $token = null;
-
-	private array $response_cache = [];
 
 	public function __construct( Secrets $secrets ) {
 		$this->secrets = $secrets;
@@ -78,48 +79,14 @@ class Fitbit {
 		$this->secrets->fitbit_refresh = $response->refresh_token;
 	}
 
-	private function request( string $path, string $method = 'GET', ?array $args = null ) : object {
-		$full_url = self::API_ROOT . $path;
-		if ( ! empty( $args['params'] ) ) {
-			$full_url .= '?' . http_build_query( $args['params'] );
-		}
-
+	protected function request( string $path, string $method = 'GET', ?array $args = null ) : object {
 		$headers = [
 			'Accept-Language' => 'en_US',
 		];
 		if ( $this->token ) {
 			$headers['Authorization'] = "Bearer {$this->token}";
 		}
-		if ( ! empty( $args['headers'] ) ) {
-			$headers = array_merge( $headers, $args['headers'] );
-		}
-
-		$flat_headers = [];
-		foreach ( $headers as $name => $value ) {
-			$flat_headers[] = "$name: $value";
-		}
-
-		$cache_key = md5( $full_url . $method . serialize( $flat_headers ) );
-
-		if ( isset( $this->response_cache[ $cache_key ] ) ) {
-			return $this->response_cache[ $cache_key ];
-		}
-
-		$ch = curl_init( $full_url );
-		if ( 'POST' === $method ) {
-			curl_setopt( $ch, CURLOPT_POST, 1 );
-		}
-
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, $flat_headers );
-
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		$response = curl_exec( $ch );
-		curl_close( $ch );
-
-		$parsed_response = json_decode( $response );
-
-		$this->response_cache[ $cache_key ] = $parsed_response;
-
-		return $parsed_response;
+		$args['headers'] = array_merge( $headers, $args['headers'] ?? [] );
+		return parent::request( self::API_ROOT . $path, $method, $args );
 	}
 }
