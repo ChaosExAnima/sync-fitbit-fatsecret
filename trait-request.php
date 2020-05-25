@@ -28,6 +28,8 @@ trait Request {
 		$ch = curl_init( $path );
 		if ( 'POST' === $method ) {
 			curl_setopt( $ch, CURLOPT_POST, 1 );
+		} else if ( 'DELETE' === $method ) {
+			curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'DELETE' );
 		}
 
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, $flat_headers );

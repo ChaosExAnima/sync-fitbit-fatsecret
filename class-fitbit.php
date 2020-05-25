@@ -47,6 +47,16 @@ class Fitbit {
 		return $response->result;
 	}
 
+	public function delete_food_entries_for_date( DateTimeInterface $date ) : void {
+		$date = $date->format( 'Y-m-d' );
+		$response = $this->request( "/1/user/-/foods/log/date/{$date}.json" );
+
+		$food_log_ids = array_column( $response->foods, 'logId' );
+		foreach ( $food_log_ids as $log_id ) {
+			$this->request( "/1/user/-/foods/log/{$log_id}.json", 'DELETE' );
+		}
+	}
+
 	public function add_food_for_date( DateTimeInterface $date, FoodEntry $food ) : object {
 		$params = [
 			'foodName'          => $food->name,
@@ -125,7 +135,8 @@ class Fitbit {
 			$headers['Authorization'] = "Bearer {$this->token}";
 		}
 		$args['headers'] = array_merge( $headers, $args['headers'] ?? [] );
-		[ 'response' => $response, 'headers' => $resp_headers ] = $this->base_request( self::API_ROOT . $path, $method, $args, true, true );
+		$parse = 'DELETE' !== $method;
+		[ 'response' => $response, 'headers' => $resp_headers ] = $this->base_request( self::API_ROOT . $path, $method, $args, $parse, true );
 
 		if ( isset( $response->errors ) ) {
 			foreach ( $response->errors as $error ) {
@@ -138,6 +149,8 @@ class Fitbit {
 		}
 
 		if ( is_array( $response ) ) {
+			$response = (object) [ 'result' => $response ];
+		} elseif ( is_string( $response ) ) {
 			$response = (object) [ 'result' => $response ];
 		}
 
