@@ -25,7 +25,7 @@ $updated      = 0;
 $current_date = DateTime::createFromImmutable( $start_date );
 do {
 	$weights = $fitbit->get_weight_for_date_period( $current_date, '1m' );
-	$current_date->add( new DateInterval( 'P31D' ) );
+	$current_date->add( new DateInterval( 'P1M' ) );
 	foreach ( $weights as $date => $kg ) {
 		$fatsecret->update_weight_for_date( new DateTimeImmutable( $date ), $kg );
 		$updated++;
