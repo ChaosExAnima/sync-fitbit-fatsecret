@@ -4,12 +4,13 @@ require_once 'class-secrets.php';
 require_once 'class-fitbit.php';
 require_once 'class-fatsecret.php';
 require_once 'class-logger.php';
+require_once 'functions.php';
 
-$args = getopt( '', [ 'date::', 'date_tz::', 'check' ] );
+$args = getopt( '', [ 'date::', 'date_tz::' ] );
 
 $date_tz = new DateTimeZone( $args['date_tz'] ?? 'America/New_York' );
 $date    = new DateTimeImmutable( $args['date'] ?? 'now', $date_tz );
-$logger  = new Logger( $date_tz );
+$logger  = new Logger( $date_tz, get_flag_set( 'debug' ) );
 $check   = new HealthCheck();
 
 $logger->log( 'Syncing food diary for ' . $date->format( 'Y-m-d' ) . ':' );
@@ -19,7 +20,7 @@ try {
 	$fitbit    = new Fitbit( $secrets );
 	$fatsecret = new FatSecret( $secrets );
 
-	if ( false === ( $script_args['check'] ?? null ) ) {
+	if ( get_flag_set( 'check' ) ) {
 		$check->init( $secrets );
 	}
 	$check->start();
@@ -33,5 +34,5 @@ try {
 	$logger->log( 'Complete!' );
 } catch ( Exception $err ) {
 	$check->fail();
-	throw $err;
+	$logger->error( $err );
 }
