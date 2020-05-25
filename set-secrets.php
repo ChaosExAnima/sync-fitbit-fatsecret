@@ -8,6 +8,7 @@ $secret_args = getopt( '', [
 	'fitbit_redirect::',
 	'fatsecret_secret::',
 	'fatsecret_verifier::',
+	'health_check_id::',
 ] );
 
 echo "Setting the following secrets:\n";
