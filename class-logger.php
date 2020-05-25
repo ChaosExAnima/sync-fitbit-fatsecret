@@ -13,6 +13,13 @@ class Logger {
 		echo $this->add_timestamp( "$message\n" );
 	}
 
+	public function debug( string $message ) : void {
+		if ( ! $this->trace ) {
+			return;
+		}
+		$this->log( 'DEBUG: ' . $message );
+	}
+
 	public function error( Throwable $error ) : void {
 		if ( ! $this->trace ) {
 			$this->log( 'ERROR: ' . $error->getMessage() );
