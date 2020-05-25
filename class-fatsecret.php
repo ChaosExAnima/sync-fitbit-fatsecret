@@ -19,9 +19,10 @@ class FatSecret {
 
 	public function __construct( Secrets $secrets ) {
 		$this->secrets = $secrets;
+		$this->get_access_token();
 	}
 
-	public function update_weight_for_date( DateTime $date, float $weight ) : object {
+	public function update_weight_for_date( DateTimeInterface $date, float $weight ) : object {
 		$params = [
 			'current_weight_kg' => $weight,
 			'comment'           => 'Updated via Fitbit',
@@ -42,7 +43,6 @@ class FatSecret {
 	}
 
 	private function request( string $endpoint, string $method = 'GET', ?array $args = null ) : object {
-		$this->get_access_token();
 		$params = array_merge( $args['params'] ?? [], $this->get_default_params(), [
 			'method'      => $endpoint,
 			'oauth_token' => $this->secrets->fatsecret_access_token,
