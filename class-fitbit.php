@@ -94,6 +94,15 @@ class Fitbit {
 			$headers['Authorization'] = "Bearer {$this->token}";
 		}
 		$args['headers'] = array_merge( $headers, $args['headers'] ?? [] );
-		return $this->base_request( self::API_ROOT . $path, $method, $args );
+		$response = $this->base_request( self::API_ROOT . $path, $method, $args );
+
+		if ( $response->errors ) {
+			foreach ( $response->errors as $error ) {
+				echo "Error from Fitbit: {$error->message}\n";
+			}
+			die;
+		}
+
+		return $response;
 	}
 }
