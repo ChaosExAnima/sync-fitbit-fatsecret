@@ -21,15 +21,18 @@ $secrets->save();
 
 echo "Updating Fat Secret from FitBit...\n";
 
-$updated = 0;
-foreach ( $date_range as $date ) {
-	$kg = $fitbit->get_weight_for_date( $date, false );
-	if ( $kg ) {
+$updated      = 0;
+$current_date = DateTime::createFromImmutable( $start_date );
+do {
+	$current_date_start = DateTimeImmutable::createFromMutable( $current_date );
+	$current_date->add( new DateInterval( 'P31D' ) );
+	$weights = $fitbit->get_weight_for_date_range( $current_date_start, $current_date );
+	foreach ( $weights as $kg ) {
 		$fatsecret->update_weight_for_date( $date, $kg );
 		$updated++;
 		$date_formatted = $date->format( 'Y-m-d' );
 		echo "Updated weight on {$date_formatted}.\n";
 	}
-}
+} while ( $current_date < $end_date );
 
 echo "Updated {$updated} days.\n";

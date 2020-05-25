@@ -18,6 +18,21 @@ class Fitbit {
 		$this->set_token();
 	}
 
+	public function get_weight_for_date_range( DateTimeInterface $date_start, DateTimeInterface $date_end ) : array {
+		$date_diff = $date_start->diff( $date_end );
+		if ( $date_diff->invert ) {
+			throw new Exception( 'Start date is after end date.' );
+		} else if ( $date_diff->days > 31 ) {
+			throw new Exception( 'Date interval is above maximum.' );
+		}
+
+		$date_start = $date_start->format( 'Y-m-d' );
+		$date_end   = $date_end->format( 'Y-m-d' );
+		$response   = $this->request( "/1/user/-/body/log/weight/date/{$date_start}/{$date_end}.json" );
+
+		return array_column( $response->weight, 'weight' );
+	}
+
 	public function get_weight_for_date( DateTimeInterface $date, bool $throw_on_empty = true ) : float {
 		$date     = $date->format( 'Y-m-d' );
 		$response = $this->request( "/1/user/-/body/log/weight/date/{$date}.json" );
