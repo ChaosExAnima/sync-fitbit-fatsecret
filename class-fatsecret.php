@@ -56,14 +56,29 @@ class FatSecret {
 			floatval( $raw_food->number_of_units )
 		);
 
+		$nutrition = [];
+		foreach ( $raw_food as $name => $val ) {
+			if ( 'calories' === $name ) {
+				$name = 'kcals';
+			} else if ( 'carbohydrate' === $name ) {
+				$name = 'carbs';
+			} else if ( 'saturated_fat' === $name ) {
+				$name = 'sat_fat';
+			}
+			$name = str_replace( 'unsaturated', '', $name );
+			$name = str_replace( 'vitamin', 'vit', $name );
+			if ( is_numeric( $val ) ) {
+				$nutrition[ $name ] = floatval( $val );
+			}
+		}
 
 		return new FoodEntry(
 			$raw_food->food_entry_name,
 			new DateTimeImmutable( '@' . $raw_food->date_int * self::SECONDS_IN_DAY ),
-			intval( $raw_food->calories ),
 			strtolower( $raw_food->meal ),
 			$unit_num,
-			$unit_name
+			$unit_name,
+			$nutrition
 		);
 	}
 
