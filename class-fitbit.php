@@ -18,7 +18,7 @@ class Fitbit {
 		$this->set_token();
 	}
 
-	public function get_weight_for_date( DateTime $date ) : float {
+	public function get_weight_for_date( DateTimeInterface $date, bool $throw_on_empty = true ) : float {
 		$date = $date->format( 'Y-m-d' );
 		$response = $this->request( "/1/user/-/body/log/weight/date/{$date}.json" );
 
@@ -27,7 +27,10 @@ class Fitbit {
 		}
 
 		if ( 0 === count( $response->weight ) ) {
-			throw new Exception( "No weight entries for date {$date}." );
+			if ( $throw_on_empty ) {
+				throw new Exception( "No weight entries for date {$date}." );
+			}
+			return 0;
 		}
 
 		return array_sum( array_column( $response->weight, 'weight' ) ) / count( $response->weight );
