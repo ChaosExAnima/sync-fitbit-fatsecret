@@ -1,6 +1,17 @@
 <?php
 
 /**
+ * Gets if an argument is passed to the script.
+ *
+ * @param string $key The parameter name.
+ * @return boolean True if passed.
+ */
+function get_flag_set( string $key ) : bool {
+	$script_args = getopt( '', [ $key ] );
+	return false === ( $script_args[ $key ] ?? null );
+}
+
+/**
  * Syncs weight for a given date.
  *
  * @param Fitbit $fitbit
