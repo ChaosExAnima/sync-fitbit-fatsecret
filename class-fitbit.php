@@ -47,7 +47,7 @@ class Fitbit {
 		return $response->result;
 	}
 
-	public function add_food_for_date( DateTimeInterface $date, FoodEntry $food ) : void {
+	public function add_food_for_date( DateTimeInterface $date, FoodEntry $food ) : object {
 		$params = [
 			'foodName'          => $food->name,
 			'mealTypeId'        => $food->get_fitbit_meal_id(),
@@ -67,7 +67,7 @@ class Fitbit {
 			'calcium'           => $food->calcium,
 			'iron'              => $food->iron,
 		];
-		$this->request( '/1/user/-/foods/log.json', 'POST', compact( 'params' ) );
+		return $this->request( '/1/user/-/foods/log.json', 'POST', compact( 'params' ) );
 	}
 
 	private function set_token() : void {
