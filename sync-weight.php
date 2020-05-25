@@ -12,8 +12,6 @@ $date_tz    = new DateTimeZone( $date_ranges['date_tz'] ?? 'America/New_York' );
 $start_date = new DateTimeImmutable( $date_ranges['date_start'] ?? 'now', $date_tz );
 $end_date   = new DateTimeImmutable( $date_ranges['date_end'] ?? 'now', $date_tz );
 
-$date_range = new DatePeriod( $start_date, new DateInterval( 'P1D' ), $end_date );
-
 $fitbit    = new Fitbit( $secrets );
 $fatsecret = new FatSecret( $secrets );
 
@@ -27,7 +25,11 @@ do {
 	$weights = $fitbit->get_weight_for_date_period( $current_date, '1m' );
 	$current_date->add( new DateInterval( 'P1M' ) );
 	foreach ( $weights as $date => $kg ) {
-		$fatsecret->update_weight_for_date( new DateTimeImmutable( $date ), $kg );
+		$current_day = new DateTimeImmutable( $date, $date_tz );
+		if ( $start_date > $current_day ) {
+			continue;
+		}
+		$fatsecret->update_weight_for_date( $current_day, $kg );
 		$updated++;
 		echo "Updated weight on {$date}.\n";
 	}
