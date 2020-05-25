@@ -52,7 +52,7 @@ class Fitbit {
 			'foodName'          => $food->name,
 			'mealTypeId'        => $food->get_fitbit_meal_id(),
 			'unitId'            => $food->fitbit_unit_id,
-			'amount'            => $food->units,
+			'amount'            => round( $food->units, 2 ),
 			'date'              => $date->format( 'Y-m-d' ),
 			'calories'          => $food->kcals,
 			'totalFat'          => $food->fat,
