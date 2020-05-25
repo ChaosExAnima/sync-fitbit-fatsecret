@@ -42,7 +42,7 @@ class Fitbit {
 		$refresh_token  = $this->secrets->fitbit_refresh;
 
 		if ( ! $this->secrets->fitbit_code ) {
-			echo 'New grant needed. Visit https://www.fitbit.com/oauth2/authorize?' .
+			echo 'Grant needed. Visit https://www.fitbit.com/oauth2/authorize?' .
 				'client_id=' . self::CLIENTID . '&redirect_uri=' . $this->secrets->fitbit_redirect .
 				'&response_type=code&scope=weight+nutrition+profile' . "\n";
 			exit( 1 );
@@ -68,6 +68,9 @@ class Fitbit {
 
 		if ( isset( $response->success ) && ! $response->success ) {
 			if ( 'invalid_grant' === $response->errors[0]->errorType ) {
+				$this->secrets->fitbit_refresh = null;
+				$this->secrets->fitbit_code = null;
+				$this->secrets->save();
 				echo 'New grant needed. Visit https://www.fitbit.com/oauth2/authorize?' .
 					'client_id=' . self::CLIENTID . '&redirect_uri=' . $this->secrets->fitbit_redirect .
 					'&response_type=code&scope=weight+nutrition+profile' . "\n";
@@ -79,6 +82,7 @@ class Fitbit {
 		$this->token = $response->access_token;
 
 		$this->secrets->fitbit_refresh = $response->refresh_token;
+		$this->secrets->save();
 	}
 
 	private function request( string $path, string $method = 'GET', ?array $args = null ) : object {
