@@ -47,8 +47,27 @@ class Fitbit {
 		return $response->result;
 	}
 
-	public function add_food_for_date() : bool {
-		return false;
+	public function add_food_for_date( DateTimeInterface $date, FoodEntry $food ) : void {
+		$params = [
+			'foodName'          => $food->name,
+			'mealTypeId'        => $food->get_fitbit_meal_id(),
+			'unitId'            => $food->fitbit_unit_id,
+			'amount'            => $food->units,
+			'date'              => $date->format( 'Y-m-d' ),
+			'totalFat'          => $food->fat,
+			'saturatedFat'      => $food->sat_fat,
+			'cholesterol'       => $food->cholesterol,
+			'sodium'            => $food->sodium,
+			'totalCarbohydrate' => $food->carbs,
+			'dietaryFiber'      => $food->fiber,
+			'sugars'            => $food->sugar,
+			'protein'           => $food->protein,
+			'vitaminA'          => $food->vit_a,
+			'vitaminC'          => $food->vit_c,
+			'calcium'           => $food->calcium,
+			'iron'              => $food->iron,
+		];
+		$this->request( '/1/user/-/foods/log.json', 'POST', compact( 'params' ) );
 	}
 
 	private function set_token() : void {
