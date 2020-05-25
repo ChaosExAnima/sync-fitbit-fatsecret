@@ -9,8 +9,8 @@ $secrets = new Secrets( __DIR__ . '/secrets.json' );
 $date_ranges = getopt( '', [ 'date_start::', 'date_end::', 'date_tz::' ] );
 
 $date_tz    = new DateTimeZone( $date_ranges['date_tz'] ?? 'America/New_York' );
-$start_date = new DateTimeImmutable( $date_ranges['date_start'] ?? 'now', $date_tz );
-$end_date   = new DateTimeImmutable( $date_ranges['date_end'] ?? 'now', $date_tz );
+$start_date = new DateTimeImmutable( $date_ranges['date_start'] ?? 'today', $date_tz );
+$end_date   = new DateTimeImmutable( $date_ranges['date_end'] ?? 'today', $date_tz );
 
 $fitbit    = new Fitbit( $secrets );
 $fatsecret = new FatSecret( $secrets );
