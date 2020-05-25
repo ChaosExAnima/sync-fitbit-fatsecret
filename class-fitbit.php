@@ -112,6 +112,10 @@ class Fitbit {
 			die;
 		}
 
+		if ( is_array( $response ) ) {
+			$response = (object) [ 'result' => $response ];
+		}
+
 		return $response;
 	}
 }
