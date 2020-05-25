@@ -82,9 +82,7 @@ class Fitbit {
 	}
 
 	private function request( string $path, string $method = 'GET', ?array $args = null ) : object {
-		$headers = [
-			'Accept-Language' => 'en_US',
-		];
+		$headers = [];
 		if ( $this->token ) {
 			$headers['Authorization'] = "Bearer {$this->token}";
 		}
