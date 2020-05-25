@@ -54,6 +54,7 @@ class Fitbit {
 			'unitId'            => $food->fitbit_unit_id,
 			'amount'            => $food->units,
 			'date'              => $date->format( 'Y-m-d' ),
+			'calories'          => $food->kcals,
 			'totalFat'          => $food->fat,
 			'saturatedFat'      => $food->sat_fat,
 			'cholesterol'       => $food->cholesterol,

@@ -53,8 +53,6 @@ class FoodEntry {
 		$unit = $this->unit_name;
 		if ( 'g' === $unit ) {
 			$unit = 'gram';
-		} else {
-			var_dump( $unit );
 		}
 
 		foreach ( $unit_types as $unit_type ) {

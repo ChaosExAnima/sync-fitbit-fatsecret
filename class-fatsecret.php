@@ -96,9 +96,12 @@ class FatSecret {
 		foreach ( $serving_types as $serving_type ) {
 			if ( $food_entry_id === intval( $serving_type->serving_id ) ) {
 				if ( ! empty( $serving_type->metric_serving_unit ) ) {
+					$num = 'g' === $serving_type->measurement_description
+						? $unit_num
+						: floatval( $serving_type->metric_serving_amount ) * $unit_num;
 					return [
 						'name' => $serving_type->metric_serving_unit,
-						'num'  => floatval( $serving_type->metric_serving_amount ) * $unit_num,
+						'num'  => $num,
 					];
 				}
 				return [
