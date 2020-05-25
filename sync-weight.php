@@ -29,8 +29,7 @@ do {
 	foreach ( $weights as $date => $kg ) {
 		$fatsecret->update_weight_for_date( new DateTimeImmutable( $date ), $kg );
 		$updated++;
-		$date_formatted = $date->format( 'Y-m-d' );
-		echo "Updated weight on {$date_formatted}.\n";
+		echo "Updated weight on {$date}.\n";
 	}
 } while ( $current_date < $end_date );
 
