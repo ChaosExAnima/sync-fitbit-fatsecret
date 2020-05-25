@@ -10,20 +10,23 @@ class FoodEntry {
 	private int $fitbit_unit_id;
 
 	private float $kcals = 0;
-	private float $calcium = 0;
-	private float $carbs = 0;
-	private float $cholesterol = 0;
 	private float $fat = 0;
-	private float $fiber = 0;
-	private float $iron = 0;
-	private float $mono_fat = 0;
-	private float $poly_fat = 0;
 	private float $sat_fat = 0;
+	private float $poly_fat = 0;
+	private float $mono_fat = 0;
+
+	private float $cholesterol = 0;
 	private float $sodium = 0;
+	private float $carbs = 0;
+	private float $fiber = 0;
 	private float $sugar = 0;
+	private float $protein = 0;
+
 	private float $vit_a = 0;
 	private float $vit_c = 0;
-	private float $protein = 0;
+
+	private float $calcium = 0;
+	private float $iron = 0;
 
 	public function __construct(
 		string $name,
