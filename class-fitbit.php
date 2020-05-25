@@ -100,11 +100,14 @@ class Fitbit {
 			$headers['Authorization'] = "Bearer {$this->token}";
 		}
 		$args['headers'] = array_merge( $headers, $args['headers'] ?? [] );
-		$response = $this->base_request( self::API_ROOT . $path, $method, $args );
+		[ 'response' => $response, 'headers' => $resp_headers ] = $this->base_request( self::API_ROOT . $path, $method, $args, true, true );
 
 		if ( isset( $response->errors ) ) {
 			foreach ( $response->errors as $error ) {
 				echo "Error from Fitbit: {$error->message}\n";
+			}
+			if ( isset( $resp_headers['fitbit-rate-limit-reset'] ) ) {
+				echo "Time till rate limit reset is {$resp_headers['fitbit-rate-limit-reset']} seconds.\n";
 			}
 			die;
 		}
