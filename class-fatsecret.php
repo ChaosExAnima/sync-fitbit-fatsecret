@@ -52,7 +52,12 @@ class FatSecret {
 
 		$args['params'] = $params;
 
-		return $this->base_request( self::API_URL, $method, $args );
+		$response = $this->base_request( self::API_URL, $method, $args );
+
+		if ( isset( $response->error ) ) {
+			throw new Exception( "Error from Fat Secret: {$response->error->message}." );
+		}
+		return $response;
 	}
 
 	private function get_access_token() : void {
