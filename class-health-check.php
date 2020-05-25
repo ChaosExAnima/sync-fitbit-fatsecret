@@ -36,7 +36,7 @@ class HealthCheck {
 			return;
 		}
 		$response = $this->base_request( self::HOST . $this->check_id . $path, 'GET', null, false );
-		if ( 'OK' !== $response ) {
+		if ( 0 !== strpos( $response, 'OK' ) ) {
 			throw new Exception( 'Invalid response to health check: ' . $response );
 		}
 	}
