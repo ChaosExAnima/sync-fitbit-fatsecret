@@ -22,7 +22,9 @@ class Secrets {
 
 	public function __set( $key, $value ) : void {
 		$this->secrets->{$key} = $value;
+	}
 
+	public function save() : void {
 		if ( ! is_writable( $this->secrets_path ) ) {
 			throw new Error( "Secrets file {$this->secrets_path} is not writable." );
 		}

@@ -6,6 +6,8 @@ $secret_args = getopt( '', [
 	'fitbit_secret::',
 	'fitbit_code::',
 	'fitbit_redirect::',
+	'fatsecret_secret::',
+	'fatsecret_verifier::',
 ] );
 
 echo "Setting the following secrets:\n";
@@ -18,3 +20,5 @@ foreach ( $secret_args as $arg => $value ) {
 		$secrets->{$arg} = $value;
 	}
 }
+
+$secrets->save();
