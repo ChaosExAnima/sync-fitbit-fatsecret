@@ -26,12 +26,12 @@ class Secrets {
 
 	public function save() : void {
 		if ( ! is_writable( $this->secrets_path ) ) {
-			throw new Error( "Secrets file {$this->secrets_path} is not writable." );
+			throw new Exception( "Secrets file {$this->secrets_path} is not writable." );
 		}
 
 		$result = file_put_contents( $this->secrets_path, json_encode( $this->secrets, JSON_PRETTY_PRINT ) );
 		if ( false === $result ) {
-			throw new Error( "Could not save secrets to {$this->secrets_path}." );
+			throw new Exception( "Could not save secrets to {$this->secrets_path}." );
 		}
 	}
 }

@@ -29,7 +29,7 @@ class Fitbit {
 		$response = $this->request( "/1/user/-/body/log/weight/date/{$date}.json" );
 
 		if ( ! isset( $response->weight ) ) {
-			throw new Error( 'Missing weight response!' );
+			throw new Exception( 'Missing weight response!' );
 		}
 
 		if ( 0 === count( $response->weight ) ) {
@@ -120,7 +120,7 @@ class Fitbit {
 					'&response_type=code&scope=weight+nutrition+profile' . "\n";
 				exit( 1 );
 			}
-			throw new Error( $response->errors[0]->message );
+			throw new Exception( $response->errors[0]->message );
 		}
 
 		$this->token = $response->access_token;
