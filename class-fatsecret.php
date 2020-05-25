@@ -1,6 +1,7 @@
 <?php
 
 require_once 'trait-request.php';
+require_once 'class-food-entry.php';
 
 class FatSecret {
 	use Request;
@@ -29,6 +30,69 @@ class FatSecret {
 			'date'              => floor( $date->getTimestamp() / self::SECONDS_IN_DAY ),
 		];
 		return $this->request( 'weight.update', 'POST', compact( 'params' ) );
+	}
+
+	public function get_food_for_day( DateTimeInterface $date ) : array {
+		$params = [
+			'date' => floor( $date->getTimestamp() / self::SECONDS_IN_DAY ),
+		];
+		$response = $this->request( 'food_entries.get', 'GET', compact( 'params' ) );
+
+		if ( ! $response->food_entries ) {
+			return [];
+		}
+
+		$food_entries = $response->food_entries->food_entry;
+		if ( ! is_array( $food_entries ) ) {
+			$food_entries = [ $food_entries ];
+		}
+		return array_map( [ $this, 'parse_food_entry' ], $food_entries );
+	}
+
+	private function parse_food_entry( object $raw_food ) : FoodEntry {
+		[ 'name' => $unit_name, 'num' => $unit_num ] = $this->get_food_entry_units(
+			intval( $raw_food->food_id ),
+			intval( $raw_food->serving_id ),
+			floatval( $raw_food->number_of_units )
+		);
+
+
+		return new FoodEntry(
+			$raw_food->food_entry_name,
+			new DateTimeImmutable( '@' . $raw_food->date_int * self::SECONDS_IN_DAY ),
+			intval( $raw_food->calories ),
+			strtolower( $raw_food->meal ),
+			$unit_num,
+			$unit_name
+		);
+	}
+
+	private function get_food_entry_units( int $food_id, int $food_entry_id, float $unit_num ) : array {
+		$params = [
+			'food_id' => $food_id,
+		];
+		$response = $this->request( 'food.get.v2', 'GET', compact( 'params' ) );
+
+		$serving_types = $response->food->servings->serving;
+		if ( ! is_array( $serving_types ) ) {
+			$serving_types = [ $serving_types ];
+		}
+
+		foreach ( $serving_types as $serving_type ) {
+			if ( $food_entry_id === intval( $serving_type->serving_id ) ) {
+				if ( ! empty( $serving_type->metric_serving_unit ) ) {
+					return [
+						'name' => $serving_type->metric_serving_unit,
+						'num'  => floatval( $serving_type->metric_serving_amount ) * $unit_num,
+					];
+				}
+				return [
+					'name' => $serving_type->measurement_description,
+					'num'  => floatval( $serving_type->number_of_units ) * $unit_num,
+				];
+			}
+		}
+		return [ 'name' => 'units', 'num' => $unit_num ];
 	}
 
 	private function get_default_params() : array {
