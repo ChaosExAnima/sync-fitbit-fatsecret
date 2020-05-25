@@ -42,6 +42,11 @@ class Fitbit {
 		return array_sum( array_column( $response->weight, 'weight' ) ) / count( $response->weight );
 	}
 
+	public function get_food_units() : array {
+		$response = $this->request( '/1/foods/units.json' );
+		return $response->result;
+	}
+
 	public function add_food_for_date() : bool {
 		return false;
 	}
