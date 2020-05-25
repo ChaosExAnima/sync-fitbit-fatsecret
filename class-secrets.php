@@ -29,7 +29,7 @@ class Secrets {
 			throw new Error( "Secrets file {$this->secrets_path} is not writable." );
 		}
 
-		$result = file_put_contents( $this->secrets_path, json_encode( $this->secrets ) );
+		$result = file_put_contents( $this->secrets_path, json_encode( $this->secrets, JSON_PRETTY_PRINT ) );
 		if ( false === $result ) {
 			throw new Error( "Could not save secrets to {$this->secrets_path}." );
 		}
