@@ -14,21 +14,21 @@ $script_args = getopt( '', [ 'date::', 'date_tz::', 'check' ] );
 
 $date_tz = new DateTimeZone( $script_args['date_tz'] ?? 'America/New_York' );
 $date    = new DateTimeImmutable( $script_args['date'] ?? 'now', $date_tz );
+$logger  = new Logger( $date_tz );
+$check   = new HealthCheck();
 
-$secrets   = new Secrets( __DIR__ . '/secrets.json' );
-$logger    = new Logger( $date_tz );
 $logger->log( 'Syncing weight and food diary for ' . $date->format( 'Y-m-d' ) . ':' );
 
-$check     = new HealthCheck();
-$fitbit    = new Fitbit( $secrets );
-$fatsecret = new FatSecret( $secrets );
-
-if ( false === ( $script_args['check'] ?? null ) ) {
-	$check->init( $secrets );
-}
-
-$check->start();
 try {
+	$secrets   = new Secrets( __DIR__ . '/secrets.json' );
+	$fitbit    = new Fitbit( $secrets );
+	$fatsecret = new FatSecret( $secrets );
+
+	if ( false === ( $script_args['check'] ?? null ) ) {
+		$check->init( $secrets );
+	}
+
+	$check->start();
 	$secrets->save();
 
 	$weight = sync_weight_for_date( $fitbit, $fatsecret, $date, $logger );
