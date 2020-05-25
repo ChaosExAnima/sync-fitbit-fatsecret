@@ -96,7 +96,7 @@ class Fitbit {
 		$args['headers'] = array_merge( $headers, $args['headers'] ?? [] );
 		$response = $this->base_request( self::API_ROOT . $path, $method, $args );
 
-		if ( $response->errors ) {
+		if ( isset( $response->errors ) ) {
 			foreach ( $response->errors as $error ) {
 				echo "Error from Fitbit: {$error->message}\n";
 			}
