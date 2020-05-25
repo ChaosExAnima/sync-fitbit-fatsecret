@@ -3,7 +3,7 @@
 trait Request {
 	private array $response_cache = [];
 
-	private function base_request( string $path, string $method = 'GET', ?array $args = null ) : object {
+	private function base_request( string $path, string $method = 'GET', ?array $args = null, bool $parse = true ) {
 		if ( ! empty( $args['params'] ) ) {
 			$path .= '?' . http_build_query( $args['params'] );
 		}
@@ -35,7 +35,15 @@ trait Request {
 		$response = curl_exec( $ch );
 		curl_close( $ch );
 
+		if ( ! $parse ) {
+			return $response;
+		}
+
 		$parsed_response = json_decode( $response );
+
+		if ( null === $parsed_response ) {
+			throw new Exception( 'Got unparseable response.' );
+		}
 
 		$this->response_cache[ $cache_key ] = $parsed_response;
 
