@@ -10,7 +10,7 @@ class HealthCheck {
 
 	private const HOST = 'https://hc-ping.com/';
 
-	private string $check_id;
+	private ?string $check_id = null;
 
 	public function init( Secrets $secrets ) : void {
 		if ( ! $secrets->health_check_id ) {
