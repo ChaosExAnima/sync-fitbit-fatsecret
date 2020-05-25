@@ -7,6 +7,8 @@ class FoodEntry {
 	private float $units;
 	private string $unit_name;
 
+	private int $fitbit_unit_id;
+
 	private float $kcals = 0;
 	private float $calcium = 0;
 	private float $carbs = 0;
@@ -41,6 +43,41 @@ class FoodEntry {
 			if ( isset( $this->{ $name } ) && 0.0 === $this->{ $name } && is_float( $val ) ) {
 				$this->{ $name } = $val;
 			}
+		}
+	}
+
+	public function map_fitbit_unit_id( array $unit_types ) : void {
+		$unit = $this->unit_name;
+		if ( 'g' === $unit ) {
+			$unit = 'gram';
+		} else {
+			var_dump( $unit );
+		}
+
+		foreach ( $unit_types as $unit_type ) {
+			if ( $unit_type->name === $unit ) {
+				$this->fitbit_unit_id = $unit_type->id;
+				return;
+			} else if ( 'serving' === $unit_type->name ) {
+				$fallback_unit_id = $unit_type->id;
+			}
+		}
+
+		if ( $fallback_unit_id ) {
+			$this->fitbit_unit_id = $fallback_unit_id;
+		}
+	}
+
+	public function get_fitbit_meal_id() : int {
+		switch ( $this->meal_time ) {
+			case 'breakfast':
+				return 1;
+			case 'lunch':
+				return 3;
+			case 'dinner':
+				return 5;
+			default:
+				return 7;
 		}
 	}
 
