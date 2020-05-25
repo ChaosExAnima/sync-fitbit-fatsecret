@@ -6,12 +6,30 @@ require_once 'class-fatsecret.php';
 
 $secrets = new Secrets( __DIR__ . '/secrets.json' );
 
-$date = new DateTime( 'now', new DateTimeZone( 'America/New_York' ) );
+$date_ranges = getopt( '', [ 'date_start::', 'date_end::', 'date_tz::' ] );
 
-$fitbit = new Fitbit( $secrets );
-$kg = $fitbit->get_weight_for_date( $date );
+$date_tz    = new DateTimeZone( $date_ranges['date_tz'] ?? 'America/New_York' );
+$start_date = new DateTimeImmutable( $date_ranges['date_start'] ?? 'now', $date_tz );
+$end_date   = new DateTimeImmutable( $date_ranges['date_end'] ?? 'now', $date_tz );
 
+$date_range = new DatePeriod( $start_date, new DateInterval( 'P1D' ), $end_date );
+
+$fitbit    = new Fitbit( $secrets );
 $fatsecret = new FatSecret( $secrets );
-$fatsecret->update_weight_for_date( $date, $kg );
 
 $secrets->save();
+
+echo "Updating Fat Secret from FitBit...\n";
+
+$updated = 0;
+foreach ( $date_range as $date ) {
+	$kg = $fitbit->get_weight_for_date( $date, false );
+	if ( $kg ) {
+		$fatsecret->update_weight_for_date( $date, $kg );
+		$updated++;
+		$date_formatted = $date->format( 'Y-m-d' );
+		echo "Updated weight on {$date_formatted}.\n";
+	}
+}
+
+echo "Updated {$updated} days.\n";
