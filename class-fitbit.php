@@ -27,7 +27,7 @@ class Fitbit {
 		}
 
 		if ( 0 === count( $response->weight ) ) {
-			return 0;
+			throw new Exception( "No weight entries for date {$date}." );
 		}
 
 		return array_sum( array_column( $response->weight, 'weight' ) ) / count( $response->weight );
