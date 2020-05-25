@@ -19,7 +19,7 @@ class Fitbit {
 	}
 
 	public function get_weight_for_date( DateTimeInterface $date, bool $throw_on_empty = true ) : float {
-		$date = $date->format( 'Y-m-d' );
+		$date     = $date->format( 'Y-m-d' );
 		$response = $this->request( "/1/user/-/body/log/weight/date/{$date}.json" );
 
 		if ( ! isset( $response->weight ) ) {
