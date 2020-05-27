@@ -9,7 +9,7 @@ require_once 'functions.php';
 $args = getopt( '', [ 'date::', 'date_tz::' ] );
 
 $date_tz = new DateTimeZone( $args['date_tz'] ?? 'America/New_York' );
-$date    = new DateTimeImmutable( $args['date'] ?? 'now', $date_tz );
+$date    = new DateTimeImmutable( $args['date'] ?? 'today', $date_tz );
 $logger  = new Logger( $date_tz, get_flag_set( 'debug' ) );
 $check   = new HealthCheck();
 
